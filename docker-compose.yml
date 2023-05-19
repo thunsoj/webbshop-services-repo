@@ -14,6 +14,7 @@ services:
       - ./sql:/docker-entrypoint-initdb.d
 
   product-service:
+    restart: on-failure
     build:
       context: ./product-service
       dockerfile: Dockerfile
@@ -23,6 +24,7 @@ services:
       - db
 
   orders-service:
+    restart: on-failure
     build:
       context: ./orders-service
       dockerfile: Dockerfile
@@ -32,6 +34,7 @@ services:
       - db
    
   customer-service:
+    restart: on-failure
     build:
       context: ./customer-service
       dockerfile: Dockerfile
