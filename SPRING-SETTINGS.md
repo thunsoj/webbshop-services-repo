@@ -1,0 +1,1 @@
+https://start.spring.io/#!type=gradle-project-kotlin&language=java&platformVersion=3.0.7&packaging=jar&jvmVersion=17&groupId=com.example&artifactId=demo&name=demo&description=Demo%20project%20for%20Spring%20Boot&packageName=com.example.demo&dependencies=devtools,lombok,web,data-jpa,mysql
