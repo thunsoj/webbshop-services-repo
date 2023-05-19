@@ -14,7 +14,7 @@ services:
       - ./sql:/docker-entrypoint-initdb.d
 
   product-service:
-    restart: on-failure
+    restart: on-failure   # Comment entire line for troubleshooting
     build:
       context: ./product-service
       dockerfile: Dockerfile
@@ -24,7 +24,7 @@ services:
       - db
 
   orders-service:
-    restart: on-failure
+    restart: on-failure   # Comment entire line for troubleshooting
     build:
       context: ./orders-service
       dockerfile: Dockerfile
@@ -34,7 +34,7 @@ services:
       - db
    
   customer-service:
-    restart: on-failure
+    restart: on-failure   # Comment entire line for troubleshooting
     build:
       context: ./customer-service
       dockerfile: Dockerfile
