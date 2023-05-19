@@ -5,7 +5,7 @@ services:
     restart: always
 
     ports:
-      - 3306:3306
+      - "3306:3306"
     environment:
       - MYSQL_USER=springuser
       - MYSQL_PASSWORD=ThePassword
@@ -19,7 +19,7 @@ services:
       context: ./product-service
       dockerfile: Dockerfile
     ports:
-      - 8080:8080
+      - "8080:8080"
     depends_on:
       - db
 
@@ -29,7 +29,7 @@ services:
       context: ./orders-service
       dockerfile: Dockerfile
     ports:
-      - 8082:8080
+      - "8081:8080"
     depends_on:
       - db
    
@@ -39,6 +39,6 @@ services:
       context: ./customer-service
       dockerfile: Dockerfile
     ports:
-      - 8083:8080
+      - "8082:8080"
     depends_on:
       - db
