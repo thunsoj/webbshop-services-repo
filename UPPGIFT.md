@@ -32,4 +32,30 @@ In backend 1 you started to build a monolith, were all services is build closely
 
 # Part 2 - Security
 
-`TBA`
+Week 21 - 22
+
+    No valid password should be committed to git
+    One of your services should require a login, with spring security
+    Create a integration test that verifies the login
+
+VG
+
+You must complete 2 of 3 VG tasks and the integrations tests.
+
+    Document your services in a professional manner with for example OpenAPI 3 springdoc
+
+    Implement error handling for the service communication, ideas on what to handle:
+        Rest client calls that takes to long time may break the system, modify your connect and read timeout.
+        If a client call fails, retry it maximal 3 times. Write code or use for example spring-retry
+        Write error handling for RestTemplates:
+            HttpServerErrorException
+            HttpClientErrorException
+
+    Implement Spring Validation for the restcontroller and database.
+
+Mandatory: Show how your code handles the VG tasks by creating integrations tests in for example postman.
+Hand-in Instructions
+
+    Download your project as a zip from github and upload it to studentportalen
+    Export or Screenshot the tests, compress it as a zip and upload it to studentportalen
+    Present your solution on the last course day
