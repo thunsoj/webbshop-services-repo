@@ -12,33 +12,41 @@ services:
       - MYSQL_RANDOM_ROOT_PASSWORD=yes
     volumes:
       - ./sql:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: [ "CMD", "mysqladmin" ,"ping", "-h", "localhost" ]
+      interval: 20s
+      timeout: 30s
+      retries: 10
+
 
   product-service:
-    restart: on-failure   # Comment entire line for troubleshooting
+    depends_on:
+      db:
+        condition: service_healthy # wait until the mysql service becomes healthy
     build:
       context: ./product-service
       dockerfile: Dockerfile
     ports:
       - "8080:8080"
-    depends_on:
-      - db
+
 
   orders-service:
-    restart: on-failure   # Comment entire line for troubleshooting
+    depends_on:
+      db:
+        condition: service_healthy # wait until the mysql service becomes healthy
     build:
       context: ./orders-service
       dockerfile: Dockerfile
     ports:
       - "8081:8080"
-    depends_on:
-      - db
    
   customer-service:
-    restart: on-failure   # Comment entire line for troubleshooting
+
+    depends_on:
+      db:
+        condition: service_healthy # wait until the mysql service becomes healthy
     build:
       context: ./customer-service
       dockerfile: Dockerfile
     ports:
       - "8082:8080"
-    depends_on:
-      - db
