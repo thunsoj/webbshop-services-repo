@@ -23,6 +23,7 @@ services:
     depends_on:
       db:
         condition: service_healthy # wait until the mysql service becomes healthy
+#    image: ghcr.io/ruckel/product-service:latest   # "image" OR "build"
     build:
       context: ./product-service
       dockerfile: Dockerfile
@@ -34,6 +35,7 @@ services:
     depends_on:
       db:
         condition: service_healthy # wait until the mysql service becomes healthy
+#    image: ghcr.io/ruckel/orders-service:latest   # "image" OR "build"
     build:
       context: ./orders-service
       dockerfile: Dockerfile
@@ -45,6 +47,7 @@ services:
     depends_on:
       db:
         condition: service_healthy # wait until the mysql service becomes healthy
+#    image: ghcr.io/ruckel/customer-service:latest   # "image" OR "build"
     build:
       context: ./customer-service
       dockerfile: Dockerfile
