@@ -1,2 +1,2 @@
-USE db_product;
-grant select, insert, delete, update on db_product.* to 'springuser'@'%';
+CREATE USER 'springuser_product'@'%' IDENTIFIED BY 'ThePassword';
+GRANT SELECT, INSERT, DELETE, UPDATE ON db_product.* TO 'springuser_product'@'%';
