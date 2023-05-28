@@ -46,7 +46,7 @@ public class OrderController {
 
     @GetMapping("/test")
     public ResponseEntity<Customer> test() {
-        Customer customer = restTemplate.getForObject("http://webbshop-services-customer-service-1:8080/customer/1", Customer.class);
+        Customer customer = restTemplate.getForObject("http://webbshop-services-repo-customer-service-1:8080/customer/1", Customer.class);
         if (customer == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
@@ -55,7 +55,7 @@ public class OrderController {
 
     @GetMapping(path = "/test2")
     public @ResponseBody Customer getCustomer() {
-        return restTemplate.getForObject("http://webbshop-services-customer-service-1:8080/customer/1", Customer.class);
+        return restTemplate.getForObject("http://webbshop-services-repo-customer-service-1:8080/customer/1", Customer.class);
     }
 
     @GetMapping("/allWithPojo")
