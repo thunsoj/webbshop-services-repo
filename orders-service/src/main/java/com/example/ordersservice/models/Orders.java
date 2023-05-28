@@ -23,13 +23,20 @@ public class Orders {
     private Date created;
     private Date updated;
 
+    @ElementCollection(fetch = FetchType.EAGER)
+    private List<Long> productIds; // Change the data type to represent the product IDs
+
+    private Long customerId;  //Same here yao but with customer
+
     @PrePersist
     protected void onCreate() {
         created = new Date();
     }
+
     @PreUpdate
     protected void onUpdate() {
         updated = new Date();
     }
-
 }
+
+

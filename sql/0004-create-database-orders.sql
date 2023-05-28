@@ -1,5 +1,22 @@
 CREATE DATABASE db_orders;
 USE db_orders;
-create table orders (id integer not null, CREATED datetime, updated DATETIME, primary key (id)) engine=InnoDB;
-create table orders_seq (next_val bigint) engine=InnoDB;
-insert into orders_seq values ( 1 );
+
+CREATE TABLE orders (
+    id BIGINT NOT NULL,
+    created DATETIME,
+    updated DATETIME,
+    customer_id BIGINT,
+    PRIMARY KEY (id)
+) ENGINE=InnoDB;
+
+CREATE TABLE orders_product_ids (
+    orders_id BIGINT,
+    product_ids BIGINT,
+    PRIMARY KEY (orders_id, product_ids),
+    FOREIGN KEY (orders_id) REFERENCES orders(id)
+) ENGINE=InnoDB;
+
+CREATE TABLE orders_seq (next_val BIGINT) ENGINE=InnoDB;
+INSERT INTO orders_seq VALUES (1);
+
+
