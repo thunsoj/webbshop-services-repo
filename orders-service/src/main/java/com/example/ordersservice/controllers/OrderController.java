@@ -6,9 +6,7 @@ import com.example.ordersservice.models.Customer;
 import com.example.ordersservice.models.Orders;
 import com.example.ordersservice.models.Product;
 import com.example.ordersservice.repositories.OrderRepository;
-import com.example.ordersservice.errorhandler.ExceptionHandlers;
-import com.example.ordersservice.errorhandler.OrderProcessingException;
-import com.example.ordersservice.errorhandler.ResourceNotFoundException;
+import com.example.ordersservice.errorhandler.RestTemplateErrorHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -30,6 +28,7 @@ public class OrderController {
 
     private final OrderRepository orderRepository;
     private RestTemplate restTemplate;
+   // restTemplate.setErrorHandler(new RestTemplateErrorHandler()); ??
 
 
     @Value("${customer-service.url}")
@@ -93,11 +92,11 @@ public class OrderController {
                                 "}).toList()";
                     }
                 } else {
-                    return ResponseEntity.ok(new ExceptionHandlers().handleResourceNotFoundException(new ResourceNotFoundException("List is null")));
+                    throw new OrderProcessingException("List is null");
                 }
 
             } else {
-                return ResponseEntity.ok(new ExceptionHandlers().handleResourceNotFoundException(new ResourceNotFoundException("Customer not found")));
+                throw new UserNotFoundException("Customer doesnt exist");
             }
 
         }).toList());
@@ -164,13 +163,13 @@ public class OrderController {
                                     .productIds(productsIds)
                             .build()));
                 }else{
-                    return ResponseEntity.ok(new ExceptionHandlers().handleOrderProcessingException(new OrderProcessingException("One or some of the products doesnt exist")));
+                    return new ResponseEntity<>(new Error(new OrderProcessingException("One/Some products doesnt exist")), HttpStatus.NOT_FOUND);
                 }
             } else {
-                return ResponseEntity.ok(new ExceptionHandlers().handleResourceNotFoundException(new ResourceNotFoundException("List is null")));
+               return new ResponseEntity<>(new Error(new OrderProcessingException("List is null")), HttpStatus.NOT_FOUND);
             }
         } else {
-            return ResponseEntity.ok(new ExceptionHandlers().handleResourceNotFoundException(new ResourceNotFoundException("Customer not found")));
+            return new ResponseEntity<>(new Error(new UserNotFoundException("Customer not found")), HttpStatus.NOT_FOUND);
 
         }
     }
