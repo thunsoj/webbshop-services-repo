@@ -98,20 +98,21 @@ public class OrderController {
         }).toList());
     }
 
-    @GetMapping("/allWithPojo")
-    public ResponseEntity<?> allWithPojo() {
-        return ResponseEntity.ok(orderRepository.findAll().stream().map(e-> {
-            Customer customer = restTemplate.getForObject(customerServiceBaseUrl + e.getCustomerId(), Customer.class);
-            HttpEntity<List<Long>> requestEntity = new HttpEntity<>(e.getProductIds());
-            ResponseEntity<List<Product>> response = restTemplate.exchange(
-                    productServiceBaseUrl + "/list",
-                    HttpMethod.POST,
-                    requestEntity,
-                    new ParameterizedTypeReference<>() {
-                    }
-            );
-            List<Product> products = response.getBody();
-            if (customer != null){
+    @GetMapping("/all/{userId}")
+    public ResponseEntity<?> allByUser(@PathVariable Long userId) {
+
+        Customer customer = restTemplate.getForObject(customerServiceBaseUrl + userId, Customer.class);
+        if(customer != null){
+            return ResponseEntity.ok(orderRepository.findAllByCustomerId(customer.getId()).stream().map(e-> {
+                HttpEntity<List<Long>> requestEntity = new HttpEntity<>(e.getProductIds());
+                ResponseEntity<List<Product>> response = restTemplate.exchange(
+                        productServiceBaseUrl + "/list",
+                        HttpMethod.POST,
+                        requestEntity,
+                        new ParameterizedTypeReference<>() {
+                        }
+                );
+                List<Product> products = response.getBody();
                 if(products != null){
                     if(products.size() == e.getProductIds().size()){
                         return OrderDTO.builder()
@@ -130,10 +131,10 @@ public class OrderController {
                 } else {
                     return "Melindas objekt som säger order listan är null";
                 }
-            } else {
-                return "Melindas objekt som säger customer null";
-            }
-        }).toList());
+            }).toList());
+        } else {
+            return ResponseEntity.ok("Melindas objekt som säger customer null");
+        }
     }
 
     @PostMapping("add/{customerId}")
@@ -157,12 +158,47 @@ public class OrderController {
                                     .productIds(productsIds)
                             .build()));
                 }else{
-                    return ResponseEntity.ok("Melindas objekt som säger nån av produkterna finns ej");
+                    return ResponseEntity.ok("Melindas objekt som säger nån av produkterna finns ej" +
+                            "(helst en lista på dom som inte finns)");
                 }
             } else {
-                return ResponseEntity.ok("Melindas objekt som säger order listan är null");
+                return ResponseEntity.ok("Melindas objekt som säger order product är null");
             }
         } else {
+            return ResponseEntity.ok("Melindas objekt som säger customer null");
+        }
+    }
+
+    @GetMapping("/{orderId}")
+    public ResponseEntity<?> byOrderId(@PathVariable Long orderId) {
+
+        Orders order = orderRepository.findById(orderId).orElseThrow();
+        Customer customer = restTemplate.getForObject(customerServiceBaseUrl + order.getCustomerId(), Customer.class);
+        if (customer != null){
+            HttpEntity<List<Long>> requestEntity = new HttpEntity<>(order.getProductIds());
+            ResponseEntity<List<Product>> response = restTemplate.exchange(
+                    productServiceBaseUrl + "/list",
+                    HttpMethod.POST,
+                    requestEntity,
+                    new ParameterizedTypeReference<>() {
+                    }
+            );
+            List<Product> products = response.getBody();
+            if(products != null){
+                if(products.size() == order.getProductIds().size()){
+                    return ResponseEntity.ok(OrderDTO.builder()
+                            .id(order.getId())
+                            .customer(customer)
+                            .products(products)
+                            .build());
+                } else {
+                    return ResponseEntity.ok("Melindas objekt som säger nån av produkterna finns ej" +
+                            "(helst en lista på dom som inte finns)");
+                }
+            }else{
+                return ResponseEntity.ok("Melindas objekt som säger order product är null");
+            }
+        }else{
             return ResponseEntity.ok("Melindas objekt som säger customer null");
         }
     }
