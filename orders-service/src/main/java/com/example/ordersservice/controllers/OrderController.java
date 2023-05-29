@@ -103,6 +103,45 @@ public class OrderController {
         }).toList());
     }
 
+    @GetMapping("/all/{userId}")
+    public ResponseEntity<?> allByUser(@PathVariable Long userId) {
+
+        Customer customer = restTemplate.getForObject(customerServiceBaseUrl + userId, Customer.class);
+        if(customer != null){
+            return ResponseEntity.ok(orderRepository.findAllByCustomerId(customer.getId()).stream().map(e-> {
+                HttpEntity<List<Long>> requestEntity = new HttpEntity<>(e.getProductIds());
+                ResponseEntity<List<Product>> response = restTemplate.exchange(
+                        productServiceBaseUrl + "/list",
+                        HttpMethod.POST,
+                        requestEntity,
+                        new ParameterizedTypeReference<>() {
+                        }
+                );
+                List<Product> products = response.getBody();
+                if(products != null){
+                    if(products.size() == e.getProductIds().size()){
+                        return OrderDTO.builder()
+                                .id(e.getId())
+                                .customer(customer)
+                                .products(products)
+                                .build();
+                    }else {
+                        return "OrderWithMessageDTo med ordern + melindas objekt med en lista av de IDS som inte finns" +
+                                "e.getProductIds().stream().map(ee -> {" +
+                                "if(!products.getId().contains(ee)){" +
+                                "return ee" +
+                                "}" +
+                                "}).toList()";
+                    }
+                } else {
+                    return "Melindas objekt som säger order listan är null";
+                }
+            }).toList());
+        } else {
+            return ResponseEntity.ok("Melindas objekt som säger customer null");
+        }
+    }
+
     @PostMapping("add/{customerId}")
 
     public ResponseEntity<?> addOrder(@PathVariable Long customerId,
@@ -126,15 +165,47 @@ public class OrderController {
                             .build()));
                 }else{
                     return ResponseEntity.ok(new ExceptionHandlers().handleOrderProcessingException(new OrderProcessingException("One or some of the products doesnt exist")));
-
                 }
             } else {
                 return ResponseEntity.ok(new ExceptionHandlers().handleResourceNotFoundException(new ResourceNotFoundException("List is null")));
-
             }
         } else {
             return ResponseEntity.ok(new ExceptionHandlers().handleResourceNotFoundException(new ResourceNotFoundException("Customer not found")));
 
+        }
+    }
+
+    @GetMapping("/{orderId}")
+    public ResponseEntity<?> byOrderId(@PathVariable Long orderId) {
+
+        Orders order = orderRepository.findById(orderId).orElseThrow();
+        Customer customer = restTemplate.getForObject(customerServiceBaseUrl + order.getCustomerId(), Customer.class);
+        if (customer != null){
+            HttpEntity<List<Long>> requestEntity = new HttpEntity<>(order.getProductIds());
+            ResponseEntity<List<Product>> response = restTemplate.exchange(
+                    productServiceBaseUrl + "/list",
+                    HttpMethod.POST,
+                    requestEntity,
+                    new ParameterizedTypeReference<>() {
+                    }
+            );
+            List<Product> products = response.getBody();
+            if(products != null){
+                if(products.size() == order.getProductIds().size()){
+                    return ResponseEntity.ok(OrderDTO.builder()
+                            .id(order.getId())
+                            .customer(customer)
+                            .products(products)
+                            .build());
+                } else {
+                    return ResponseEntity.ok("Melindas objekt som säger nån av produkterna finns ej" +
+                            "(helst en lista på dom som inte finns)");
+                }
+            }else{
+                return ResponseEntity.ok("Melindas objekt som säger order product är null");
+            }
+        }else{
+            return ResponseEntity.ok("Melindas objekt som säger customer null");
         }
     }
 }
