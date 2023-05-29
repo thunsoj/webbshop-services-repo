@@ -93,11 +93,11 @@ public class OrderController {
                                 "}).toList()";
                     }
                 } else {
-                    return new ExceptionHandlers().handleResourceNotFoundException(new ResourceNotFoundException("List is null"));
+                    return ResponseEntity.ok(new ExceptionHandlers().handleResourceNotFoundException(new ResourceNotFoundException("List is null")));
                 }
 
             } else {
-                return new ExceptionHandlers().handleResourceNotFoundException(new ResourceNotFoundException("Customer not found"));
+                return ResponseEntity.ok(new ExceptionHandlers().handleResourceNotFoundException(new ResourceNotFoundException("Customer not found")));
             }
 
         }).toList());
@@ -125,15 +125,15 @@ public class OrderController {
                                     .productIds(productsIds)
                             .build()));
                 }else{
-                    return new ExceptionHandlers().handleOrderProcessingException(new OrderProcessingException("One or some of the products doesnt exist"));
+                    return ResponseEntity.ok(new ExceptionHandlers().handleOrderProcessingException(new OrderProcessingException("One or some of the products doesnt exist")));
 
                 }
             } else {
-                return new ExceptionHandlers().handleResourceNotFoundException(new ResourceNotFoundException("List is null"));
+                return ResponseEntity.ok(new ExceptionHandlers().handleResourceNotFoundException(new ResourceNotFoundException("List is null")));
 
             }
         } else {
-            return new ExceptionHandlers().handleResourceNotFoundException(new ResourceNotFoundException("Customer not found"));
+            return ResponseEntity.ok(new ExceptionHandlers().handleResourceNotFoundException(new ResourceNotFoundException("Customer not found")));
 
         }
     }
