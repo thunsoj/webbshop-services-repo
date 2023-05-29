@@ -98,6 +98,44 @@ public class OrderController {
         }).toList());
     }
 
+    @GetMapping("/allWithPojo")
+    public ResponseEntity<?> allWithPojo() {
+        return ResponseEntity.ok(orderRepository.findAll().stream().map(e-> {
+            Customer customer = restTemplate.getForObject(customerServiceBaseUrl + e.getCustomerId(), Customer.class);
+            HttpEntity<List<Long>> requestEntity = new HttpEntity<>(e.getProductIds());
+            ResponseEntity<List<Product>> response = restTemplate.exchange(
+                    productServiceBaseUrl + "/list",
+                    HttpMethod.POST,
+                    requestEntity,
+                    new ParameterizedTypeReference<>() {
+                    }
+            );
+            List<Product> products = response.getBody();
+            if (customer != null){
+                if(products != null){
+                    if(products.size() == e.getProductIds().size()){
+                        return OrderDTO.builder()
+                                .id(e.getId())
+                                .customer(customer)
+                                .products(products)
+                                .build();
+                    }else {
+                        return "OrderWithMessageDTo med ordern + melindas objekt med en lista av de IDS som inte finns" +
+                                "e.getProductIds().stream().map(ee -> {" +
+                                "if(!products.getId().contains(ee)){" +
+                                "return ee" +
+                                "}" +
+                                "}).toList()";
+                    }
+                } else {
+                    return "Melindas objekt som säger order listan är null";
+                }
+            } else {
+                return "Melindas objekt som säger customer null";
+            }
+        }).toList());
+    }
+
     @PostMapping("add/{customerId}")
     public ResponseEntity<?> addOrder(@PathVariable Long customerId,
                                       @RequestBody List<Long> productsIds){
