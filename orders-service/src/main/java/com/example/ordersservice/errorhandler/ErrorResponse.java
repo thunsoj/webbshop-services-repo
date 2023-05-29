@@ -1,4 +1,4 @@
-package errorhandler;
+package com.example.ordersservice.errorhandler;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

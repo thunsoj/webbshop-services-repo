@@ -1,6 +1,6 @@
 package com.example.ordersservice.dto;
 
-import errorhandler.ExceptionHandlers;
+import com.example.ordersservice.errorhandler.ExceptionHandlers;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

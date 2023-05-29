@@ -1,4 +1,4 @@
-package errorhandler;
+package com.example.ordersservice.errorhandler;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
