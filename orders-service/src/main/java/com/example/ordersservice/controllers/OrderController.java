@@ -26,9 +26,9 @@ import java.util.List;
 @RequestMapping("/order")
 public class OrderController {
 
+
     private final OrderRepository orderRepository;
     private RestTemplate restTemplate;
-   // restTemplate.setErrorHandler(new RestTemplateErrorHandler()); ??
 
 
     @Value("${customer-service.url}")
@@ -41,7 +41,14 @@ public class OrderController {
     public OrderController(OrderRepository orderRepository, RestTemplate restTemplate) {
         this.orderRepository = orderRepository;
         this.restTemplate = restTemplate;
+
+        restTemplate = new RestTemplate();
+        RestTemplateErrorHandler errorHandler = new RestTemplateErrorHandler();
+        restTemplate.setErrorHandler(errorHandler);
     }
+
+
+
 
     @GetMapping("/all")
     public ResponseEntity<Iterable<Orders>> all(){
@@ -92,11 +99,11 @@ public class OrderController {
                                 "}).toList()";
                     }
                 } else {
-                    throw new OrderProcessingException("List is null");
+                    return ResponseEntity.ok(restTemplate.getErrorHandler());
                 }
 
             } else {
-                throw new UserNotFoundException("Customer doesnt exist");
+                return ResponseEntity.ok(restTemplate.getErrorHandler());
             }
 
         }).toList());
@@ -133,11 +140,11 @@ public class OrderController {
                                 "}).toList()";
                     }
                 } else {
-                    return "Melindas objekt som säger order listan är null";
+                    return ResponseEntity.ok(restTemplate.getErrorHandler());
                 }
             }).toList());
         } else {
-            return ResponseEntity.ok("Melindas objekt som säger customer null");
+            return ResponseEntity.ok(restTemplate.getErrorHandler());
         }
     }
 
@@ -163,13 +170,13 @@ public class OrderController {
                                     .productIds(productsIds)
                             .build()));
                 }else{
-                    return new ResponseEntity<>(new Error(new OrderProcessingException("One/Some products doesnt exist")), HttpStatus.NOT_FOUND);
+                    return ResponseEntity.ok(restTemplate.getErrorHandler());
                 }
             } else {
-               return new ResponseEntity<>(new Error(new OrderProcessingException("List is null")), HttpStatus.NOT_FOUND);
+                return ResponseEntity.ok(restTemplate.getErrorHandler());
             }
         } else {
-            return new ResponseEntity<>(new Error(new UserNotFoundException("Customer not found")), HttpStatus.NOT_FOUND);
+            return ResponseEntity.ok(restTemplate.getErrorHandler());
 
         }
     }
@@ -201,10 +208,10 @@ public class OrderController {
                             "(helst en lista på dom som inte finns)");
                 }
             }else{
-                return ResponseEntity.ok("Melindas objekt som säger order product är null");
+                return ResponseEntity.ok(restTemplate.getErrorHandler());
             }
         }else{
-            return ResponseEntity.ok("Melindas objekt som säger customer null");
+            return ResponseEntity.ok(restTemplate.getErrorHandler());
         }
     }
 }
