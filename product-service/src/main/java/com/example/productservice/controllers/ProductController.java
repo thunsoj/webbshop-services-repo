@@ -31,4 +31,9 @@ public class ProductController {
         repo.save(p);
         return new ResponseEntity<>(p, HttpStatus.CREATED);
     }
+
+    @PostMapping("/list")
+    public ResponseEntity<List<Product>> productList(@RequestBody List<Long> ids){
+        return ResponseEntity.ok(repo.findByIdIn(ids));
+    }
 }
