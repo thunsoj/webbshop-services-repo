@@ -28,8 +28,7 @@ public class ProductController {
 
     @PostMapping("/add")
     public ResponseEntity<Product> addProduct(@RequestBody Product p){
-        repo.save(p);
-        return new ResponseEntity<>(p, HttpStatus.CREATED);
+        return new ResponseEntity<>(repo.save(p), HttpStatus.CREATED);
     }
 
     @PostMapping("/list")

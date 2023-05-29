@@ -19,6 +19,7 @@ public class Customer {
     @GeneratedValue
     private Long id;
     private String name;
+    @Column(unique = true)
     private int ssn;
 
     private Date created;
