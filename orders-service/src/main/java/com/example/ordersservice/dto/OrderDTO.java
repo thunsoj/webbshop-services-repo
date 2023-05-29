@@ -3,6 +3,7 @@ package com.example.ordersservice.dto;
 import com.example.ordersservice.models.Customer;
 import com.example.ordersservice.models.Product;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 

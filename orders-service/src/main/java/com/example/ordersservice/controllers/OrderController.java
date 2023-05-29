@@ -9,6 +9,9 @@ import com.example.ordersservice.repositories.OrderRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -59,28 +62,41 @@ public class OrderController {
     }
 
     @GetMapping("/allWithPojo")
-    public ResponseEntity<List<OrderDTO>> allWithPojo() {
-        List<OrderDTO> ordersToSend = new ArrayList<>();
-        List<Orders> orders = orderRepository.findAll();
-
-        for (Orders order : orders) {
-            Customer customer = restTemplate.getForObject(customerServiceBaseUrl + order.getCustomerId(), Customer.class);
-
-            if (customer != null) {
-                List<Product> products = new ArrayList<>();
-                for (Long productId : order.getProductIds()) {
-                    Product product = restTemplate.getForObject(productServiceBaseUrl + productId, Product.class);
-                    if (product != null) {
-                        products.add(product);
+    public ResponseEntity<?> allWithPojo() {
+        return ResponseEntity.ok(orderRepository.findAll().stream().map(e-> {
+            Customer customer = restTemplate.getForObject(customerServiceBaseUrl + e.getCustomerId(), Customer.class);
+            HttpEntity<List<Long>> requestEntity = new HttpEntity<>(e.getProductIds());
+            ResponseEntity<List<Product>> response = restTemplate.exchange(
+                    productServiceBaseUrl + "/list",
+                    HttpMethod.POST,
+                    requestEntity,
+                    new ParameterizedTypeReference<>() {
                     }
+            );
+            List<Product> products = response.getBody();
+            if (customer != null){
+                if(products != null){
+                    if(products.size() == e.getProductIds().size()){
+                        return OrderDTO.builder()
+                                .id(e.getId())
+                                .customer(customer)
+                                .products(products)
+                                .build();
+                    }else {
+                        return "OrderWithMessageDTo med ordern + melindas objekt med en lista av de IDS som inte finns" +
+                                "e.getProductIds().stream().map(ee -> {" +
+                                "if(!products.getId().contains(ee)){" +
+                                "return ee" +
+                                "}" +
+                                "}).toList()";
+                    }
+                } else {
+                    return "Melindas objekt som säger order listan är null";
                 }
-
-                OrderDTO orderDTO = new OrderDTO(order.getId(), order.getCreated(), order.getUpdated(), products, customer);
-                ordersToSend.add(orderDTO);
+            } else {
+                return "Melindas objekt som säger customer null";
             }
-        }
-
-        return ResponseEntity.ok(ordersToSend);
+        }).toList());
     }
 
 }
