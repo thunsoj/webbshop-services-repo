@@ -17,7 +17,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -97,5 +96,36 @@ public class OrderController {
                 return "Melindas objekt som säger customer null";
             }
         }).toList());
+    }
+
+    @PostMapping("add/{customerId}")
+    public ResponseEntity<?> addOrder(@PathVariable Long customerId,
+                                      @RequestBody List<Long> productsIds){
+
+        if(restTemplate.getForObject(customerServiceBaseUrl + customerId, Customer.class) != null){
+            HttpEntity<List<Long>> requestEntity = new HttpEntity<>(productsIds);
+            ResponseEntity<List<Product>> response = restTemplate.exchange(
+                    productServiceBaseUrl + "/list",
+                    HttpMethod.POST,
+                    requestEntity,
+                    new ParameterizedTypeReference<>() {
+                    }
+            );
+            List<Product> products = response.getBody();
+            if (products != null){
+                if(products.size() == productsIds.size()){
+                    return ResponseEntity.ok(orderRepository.save(Orders.builder()
+                                    .customerId(customerId)
+                                    .productIds(productsIds)
+                            .build()));
+                }else{
+                    return ResponseEntity.ok("Melindas objekt som säger nån av produkterna finns ej");
+                }
+            } else {
+                return ResponseEntity.ok("Melindas objekt som säger order listan är null");
+            }
+        } else {
+            return ResponseEntity.ok("Melindas objekt som säger customer null");
+        }
     }
 }
