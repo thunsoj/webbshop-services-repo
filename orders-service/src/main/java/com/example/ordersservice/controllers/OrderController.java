@@ -6,6 +6,9 @@ import com.example.ordersservice.models.Customer;
 import com.example.ordersservice.models.Orders;
 import com.example.ordersservice.models.Product;
 import com.example.ordersservice.repositories.OrderRepository;
+import errorhandler.ExceptionHandlers;
+import errorhandler.OrderProcessingException;
+import errorhandler.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -90,15 +93,18 @@ public class OrderController {
                                 "}).toList()";
                     }
                 } else {
-                    return "Melindas objekt som säger order listan är null";
+                    return new ExceptionHandlers().handleResourceNotFoundException(new ResourceNotFoundException("List is null"));
                 }
+
             } else {
-                return "Melindas objekt som säger customer null";
+                return new ExceptionHandlers().handleResourceNotFoundException(new ResourceNotFoundException("Customer not found"));
             }
+
         }).toList());
     }
 
     @PostMapping("add/{customerId}")
+
     public ResponseEntity<?> addOrder(@PathVariable Long customerId,
                                       @RequestBody List<Long> productsIds){
 
@@ -119,13 +125,16 @@ public class OrderController {
                                     .productIds(productsIds)
                             .build()));
                 }else{
-                    return ResponseEntity.ok("Melindas objekt som säger nån av produkterna finns ej");
+                    return new ExceptionHandlers().handleOrderProcessingException(new OrderProcessingException("One or some of the products doesnt exist"));
+
                 }
             } else {
-                return ResponseEntity.ok("Melindas objekt som säger order listan är null");
+                return new ExceptionHandlers().handleResourceNotFoundException(new ResourceNotFoundException("List is null"));
+
             }
         } else {
-            return ResponseEntity.ok("Melindas objekt som säger customer null");
+            return new ExceptionHandlers().handleResourceNotFoundException(new ResourceNotFoundException("Customer not found"));
+
         }
     }
 }
