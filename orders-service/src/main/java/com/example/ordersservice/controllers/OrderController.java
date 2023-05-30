@@ -7,7 +7,6 @@ import com.example.ordersservice.models.Orders;
 import com.example.ordersservice.models.Product;
 import com.example.ordersservice.repositories.OrderRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
@@ -26,7 +25,7 @@ import java.util.List;
 public class OrderController {
 
     private final OrderRepository orderRepository;
-    private RestTemplate restTemplate;
+    private final RestTemplate restTemplate;
 
 
     @Value("${customer-service.url}")
@@ -34,12 +33,6 @@ public class OrderController {
 
     @Value("${product-service.url}")
     private String productServiceBaseUrl;
-
-    @Autowired
-    public OrderController(OrderRepository orderRepository, RestTemplate restTemplate) {
-        this.orderRepository = orderRepository;
-        this.restTemplate = restTemplate;
-    }
 
     @GetMapping("/all")
     public ResponseEntity<Iterable<Orders>> all(){
@@ -78,6 +71,8 @@ public class OrderController {
                     if(products.size() == e.getProductIds().size()){
                         return OrderDTO.builder()
                                 .id(e.getId())
+                                .created(e.getCreated())
+                                .updated(e.getUpdated())
                                 .customer(customer)
                                 .products(products)
                                 .build();
@@ -104,19 +99,13 @@ public class OrderController {
         Customer customer = restTemplate.getForObject(customerServiceBaseUrl + userId, Customer.class);
         if(customer != null){
             return ResponseEntity.ok(orderRepository.findAllByCustomerId(customer.getId()).stream().map(e-> {
-                HttpEntity<List<Long>> requestEntity = new HttpEntity<>(e.getProductIds());
-                ResponseEntity<List<Product>> response = restTemplate.exchange(
-                        productServiceBaseUrl + "/list",
-                        HttpMethod.POST,
-                        requestEntity,
-                        new ParameterizedTypeReference<>() {
-                        }
-                );
-                List<Product> products = response.getBody();
+                List<Product> products = retrieveProducts(e.getProductIds());
                 if(products != null){
                     if(products.size() == e.getProductIds().size()){
                         return OrderDTO.builder()
                                 .id(e.getId())
+                                .created(e.getCreated())
+                                .updated(e.getUpdated())
                                 .customer(customer)
                                 .products(products)
                                 .build();
@@ -154,8 +143,8 @@ public class OrderController {
             if (products != null){
                 if(products.size() == productsIds.size()){
                     return ResponseEntity.ok(orderRepository.save(Orders.builder()
-                                    .customerId(customerId)
-                                    .productIds(productsIds)
+                            .customerId(customerId)
+                            .productIds(productsIds)
                             .build()));
                 }else{
                     return ResponseEntity.ok("Melindas objekt som säger nån av produkterna finns ej" +
@@ -174,32 +163,35 @@ public class OrderController {
 
         Orders order = orderRepository.findById(orderId).orElseThrow();
         Customer customer = restTemplate.getForObject(customerServiceBaseUrl + order.getCustomerId(), Customer.class);
-        if (customer != null){
-            HttpEntity<List<Long>> requestEntity = new HttpEntity<>(order.getProductIds());
-            ResponseEntity<List<Product>> response = restTemplate.exchange(
-                    productServiceBaseUrl + "/list",
-                    HttpMethod.POST,
-                    requestEntity,
-                    new ParameterizedTypeReference<>() {
-                    }
-            );
-            List<Product> products = response.getBody();
-            if(products != null){
-                if(products.size() == order.getProductIds().size()){
-                    return ResponseEntity.ok(OrderDTO.builder()
-                            .id(order.getId())
-                            .customer(customer)
-                            .products(products)
-                            .build());
-                } else {
-                    return ResponseEntity.ok("Melindas objekt som säger nån av produkterna finns ej" +
+        List<Product> products = retrieveProducts(order.getProductIds());
+        if(products != null){
+            if(products.size() == order.getProductIds().size()){
+                return ResponseEntity.ok(OrderDTO.builder()
+                        .id(order.getId())
+                        .created(order.getCreated())
+                        .updated(order.getUpdated())
+                        .customer(customer)
+                        .products(products)
+                        .build());
+            }else {
+                return ResponseEntity.ok("Melindas objekt som säger nån av produkterna finns ej" +
                             "(helst en lista på dom som inte finns)");
-                }
-            }else{
-                return ResponseEntity.ok("Melindas objekt som säger order product är null");
             }
-        }else{
-            return ResponseEntity.ok("Melindas objekt som säger customer null");
+        }else {
+            return ResponseEntity.ok("Melindas objekt som säger order product är null");
         }
     }
+
+    private List<Product> retrieveProducts(List<Long> productIds) {
+        HttpEntity<List<Long>> requestEntity = new HttpEntity<>(productIds);
+        ResponseEntity<List<Product>> response = restTemplate.exchange(
+                productServiceBaseUrl + "/list",
+                HttpMethod.POST,
+                requestEntity,
+                new ParameterizedTypeReference<>() {
+                }
+        );
+        return response.getBody();
+    }
+
 }
