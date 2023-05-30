@@ -41,11 +41,12 @@ public class OrderController {
     private String productServiceBaseUrl;
 
 
+    @Autowired
     public OrderController(OrderRepository orderRepository, RestTemplate restTemplate) {
         this.orderRepository = orderRepository;
-        this.restTemplate = restTemplate;
         RestTemplateResponseErrorHandler errorHandler = new RestTemplateResponseErrorHandler();
         restTemplate.setErrorHandler(errorHandler);
+        this.restTemplate = restTemplate;
     }
 
     @GetMapping("/all")
@@ -86,6 +87,7 @@ public class OrderController {
     public ResponseEntity<?> allByUser(@PathVariable Long userId) {
 
         Customer customer = restTemplate.getForObject(customerServiceBaseUrl + userId, Customer.class);
+
         if(customer != null){
             return ResponseEntity.ok(orderRepository.findAllByCustomerId(customer.getId()).stream().map(e-> {
                 List<Product> products = retrieveProducts(e.getProductIds());
@@ -99,14 +101,14 @@ public class OrderController {
                                 .products(products)
                                 .build();
                     }else {
-                        return "Ajajaj";
+                        throw new RuntimeException("Incomplete products data for order with ID: " + e.getId());
                     }
                 } else {
-                    return ResponseEntity.ok(new ErrorResponse());
+                    throw new RuntimeException("Incomplete products data for order with ID: " + e.getId());
                 }
             }).toList());
         } else {
-            return ResponseEntity.ok(new ErrorResponse());
+            throw new RuntimeException("Incomplete products data for order with ID: ");
         }
     }
 

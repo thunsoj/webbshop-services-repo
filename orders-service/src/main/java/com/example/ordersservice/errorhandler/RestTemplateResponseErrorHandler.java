@@ -26,7 +26,7 @@ public class RestTemplateResponseErrorHandler implements ResponseErrorHandler {
                 try {
                     throw new ChangeSetPersister.NotFoundException();
                 } catch (ChangeSetPersister.NotFoundException e) {
-                    throw new RuntimeException(e);
+                    throw new RuntimeException("NU ÄR DU I RESTTEMPLATERESPONSE YÄÄÄÄ"+e);
                 }
             } else {
                 // You can handle other client errors here
