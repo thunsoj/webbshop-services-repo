@@ -170,7 +170,7 @@ public class OrderController {
                                     .productIds(productsIds)
                             .build()));
                 }else{
-                    return ResponseEntity.ok(new ErrorResponse());
+                 throw new CustomerNotFoundException(customerId);
                 }
             } else {
                 return ResponseEntity.ok(new ErrorResponse());
@@ -204,7 +204,7 @@ public class OrderController {
                             .products(products)
                             .build());
                 } else {
-                    return ResponseEntity.ok(new ErrorResponse());
+                    throw new CustomerNotFoundException(customer.getId());
                 }
             }else{
                 return ResponseEntity.ok(new ErrorResponse());
