@@ -45,33 +45,11 @@ public class OrderController {
         return ResponseEntity.ok(orderRepository.findAll());
     }
 
-    @GetMapping("/test")
-    public ResponseEntity<Customer> test() {
-        Customer customer = restTemplate.getForObject("http://webbshop-services-repo-customer-service-1:8080/customer/1", Customer.class);
-        if (customer == null) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-        return ResponseEntity.ok(customer);
-    }
-
-    @GetMapping(path = "/test2")
-    public @ResponseBody Customer getCustomer() {
-        return restTemplate.getForObject("http://webbshop-services-repo-customer-service-1:8080/customer/1", Customer.class);
-    }
-
     @GetMapping("/allWithPojo")
     public ResponseEntity<?> allWithPojo() {
         return ResponseEntity.ok(orderRepository.findAll().stream().map(e-> {
             Customer customer = restTemplate.getForObject(customerServiceBaseUrl + e.getCustomerId(), Customer.class);
-            HttpEntity<List<Long>> requestEntity = new HttpEntity<>(e.getProductIds());
-            ResponseEntity<List<Product>> response = restTemplate.exchange(
-                    productServiceBaseUrl + "/list",
-                    HttpMethod.POST,
-                    requestEntity,
-                    new ParameterizedTypeReference<>() {
-                    }
-            );
-            List<Product> products = response.getBody();
+            List<Product> products = retrieveProducts(e.getProductIds());
             if (customer != null){
                 if(products != null){
                     if(products.size() == e.getProductIds().size()){
@@ -83,12 +61,7 @@ public class OrderController {
                                 .products(products)
                                 .build();
                     }else {
-                        return "OrderWithMessageDTo med ordern + melindas objekt med en lista av de IDS som inte finns" +
-                                "e.getProductIds().stream().map(ee -> {" +
-                                "if(!products.getId().contains(ee)){" +
-                                "return ee" +
-                                "}" +
-                                "}).toList()";
+                        return "Ajajaj";
                     }
                 } else {
                     return ResponseEntity.ok(new ErrorResponse().getTimestamp().getHour()).getStatusCode().getClass();
@@ -118,12 +91,7 @@ public class OrderController {
                                 .products(products)
                                 .build();
                     }else {
-                        return "OrderWithMessageDTo med ordern + melindas objekt med en lista av de IDS som inte finns" +
-                                "e.getProductIds().stream().map(ee -> {" +
-                                "if(!products.getId().contains(ee)){" +
-                                "return ee" +
-                                "}" +
-                                "}).toList()";
+                        return "Ajajaj";
                     }
                 } else {
                     return ResponseEntity.ok(new ErrorResponse());
@@ -139,15 +107,7 @@ public class OrderController {
     public ResponseEntity<?> addOrder(@PathVariable Long customerId,
                                       @RequestBody List<Long> productsIds){
         if(restTemplate.getForObject(customerServiceBaseUrl + customerId, Customer.class) != null){
-            HttpEntity<List<Long>> requestEntity = new HttpEntity<>(productsIds);
-            ResponseEntity<List<Product>> response = restTemplate.exchange(
-                    productServiceBaseUrl + "/list",
-                    HttpMethod.POST,
-                    requestEntity,
-                    new ParameterizedTypeReference<>() {
-                    }
-            );
-            List<Product> products = response.getBody();
+            List<Product> products = retrieveProducts(productsIds);
             if (products != null){
                 if(products.size() == productsIds.size()){
                     return ResponseEntity.ok(orderRepository.save(Orders.builder()
@@ -172,19 +132,13 @@ public class OrderController {
         Orders order = orderRepository.findById(orderId).orElseThrow();
         Customer customer = restTemplate.getForObject(customerServiceBaseUrl + order.getCustomerId(), Customer.class);
         if (customer != null){
-            HttpEntity<List<Long>> requestEntity = new HttpEntity<>(order.getProductIds());
-            ResponseEntity<List<Product>> response = restTemplate.exchange(
-                    productServiceBaseUrl + "/list",
-                    HttpMethod.POST,
-                    requestEntity,
-                    new ParameterizedTypeReference<>() {
-                    }
-            );
-            List<Product> products = response.getBody();
+            List<Product> products = retrieveProducts(order.getProductIds());
             if(products != null){
                 if(products.size() == order.getProductIds().size()){
                     return ResponseEntity.ok(OrderDTO.builder()
                             .id(order.getId())
+                            .created(order.getCreated())
+                            .updated(order.getUpdated())
                             .customer(customer)
                             .products(products)
                             .build());
