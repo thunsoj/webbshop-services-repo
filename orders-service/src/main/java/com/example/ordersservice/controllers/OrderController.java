@@ -3,7 +3,6 @@ package com.example.ordersservice.controllers;
 
 
 import com.example.ordersservice.dto.OrderDTO;
-import com.example.ordersservice.errorhandler.ErrorResponse;
 import com.example.ordersservice.errorhandler.RestTemplateResponseErrorHandler;
 import com.example.ordersservice.models.Customer;
 import com.example.ordersservice.models.Orders;
@@ -55,31 +54,17 @@ public class OrderController {
     }
 
     @GetMapping("/allWithPojo")
-    public ResponseEntity<?> allWithPojo() {
+    public ResponseEntity<List<OrderDTO>> allWithPojo() {
         return ResponseEntity.ok(orderRepository.findAll().stream().map(e-> {
             Customer customer = restTemplate.getForObject(customerServiceBaseUrl + e.getCustomerId(), Customer.class);
             List<Product> products = retrieveProducts(e.getProductIds());
-            if (customer != null){
-                if(products != null){
-                    if(products.size() == e.getProductIds().size()){
-                        return OrderDTO.builder()
-                                .id(e.getId())
-                                .created(e.getCreated())
-                                .updated(e.getUpdated())
-                                .customer(customer)
-                                .products(products)
-                                .build();
-                    }else {
-                        return "Ajajaj";
-                    }
-                } else {
-                    return ResponseEntity.ok(new ErrorResponse().getTimestamp().getHour()).getStatusCode().getClass();
-                }
-
-            } else {
-                return ResponseEntity.ok(new ErrorResponse());
-            }
-
+                return OrderDTO.builder()
+                        .id(e.getId())
+                        .created(e.getCreated())
+                        .updated(e.getUpdated())
+                        .customer(customer)
+                        .products(products)
+                        .build();
         }).toList());
     }
 
@@ -106,25 +91,15 @@ public class OrderController {
 
     @PostMapping("add/{customerId}")
 
-    public ResponseEntity<?> addOrder(@PathVariable Long customerId,
-                                      @RequestBody List<Long> productsIds){
+    public ResponseEntity<?> addOrder(@PathVariable Long customerId, @RequestBody List<Long> productsIds){
         if(restTemplate.getForObject(customerServiceBaseUrl + customerId, Customer.class) != null){
             List<Product> products = retrieveProducts(productsIds);
-            if (products != null){
-                if(products.size() == productsIds.size()){
-                    return ResponseEntity.ok(orderRepository.save(Orders.builder()
-                            .customerId(customerId)
-                            .productIds(productsIds)
-                            .build()));
-                }else{
-                    return new ResponseEntity<>("Ajajaj", HttpStatus.NOT_FOUND);
-                }
+            return ResponseEntity.ok(orderRepository.save(Orders.builder()
+                    .customerId(customerId)
+                    .productIds(productsIds)
+                    .build()));
             } else {
-                return ResponseEntity.ok(new ErrorResponse());
-            }
-        } else {
-            return ResponseEntity.ok(new ErrorResponse());
-
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -133,26 +108,15 @@ public class OrderController {
 
         Orders order = orderRepository.findById(orderId).orElseThrow();
         Customer customer = restTemplate.getForObject(customerServiceBaseUrl + order.getCustomerId(), Customer.class);
-        if (customer != null){
-            List<Product> products = retrieveProducts(order.getProductIds());
-            if(products != null){
-                if(products.size() == order.getProductIds().size()){
-                    return ResponseEntity.ok(OrderDTO.builder()
-                            .id(order.getId())
-                            .created(order.getCreated())
-                            .updated(order.getUpdated())
-                            .customer(customer)
-                            .products(products)
-                            .build());
-                } else {
-                    return new ResponseEntity<>("Ajajaj", HttpStatus.NOT_FOUND);
-                }
-            }else{
-                return ResponseEntity.ok(new ErrorResponse());
-            }
-        }else{
-            return ResponseEntity.ok(new ErrorResponse());
-        }
+        List<Product> products = retrieveProducts(order.getProductIds());
+        return ResponseEntity.ok(OrderDTO.builder()
+                .id(order.getId())
+                .created(order.getCreated())
+                .updated(order.getUpdated())
+                .customer(customer)
+                .products(products)
+                .build());
+
     }
 
 

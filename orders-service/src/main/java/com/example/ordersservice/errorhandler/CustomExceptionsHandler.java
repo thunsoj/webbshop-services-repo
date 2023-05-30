@@ -24,7 +24,7 @@ public class CustomExceptionsHandler extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler(ResourceNotFoundException.class)
-    public final ResponseEntity<ErrorResponse> handleCustomerNotFoundException(Exception ex, WebRequest request) {
+    public final ResponseEntity<ErrorResponse> handleResourceNotFoundException(Exception ex, WebRequest request) {
         ErrorResponse error = new ErrorResponse();
         error.setMessage(ex.getMessage());
         error.setTimestamp(LocalDateTime.now());

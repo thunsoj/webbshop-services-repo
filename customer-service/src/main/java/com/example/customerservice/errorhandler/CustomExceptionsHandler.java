@@ -1,6 +1,6 @@
-package com.example.customerservice.exceptions;
+package com.example.customerservice.errorhandler;
 
-import com.example.customerservice.errorhandler.ErrorResponse;
+import com.example.customerservice.exceptions.CustomerNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
