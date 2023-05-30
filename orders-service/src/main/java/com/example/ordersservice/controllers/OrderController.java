@@ -4,12 +4,14 @@ package com.example.ordersservice.controllers;
 
 import com.example.ordersservice.dto.OrderDTO;
 import com.example.ordersservice.errorhandler.ErrorResponse;
+import com.example.ordersservice.errorhandler.RestTemplateResponseErrorHandler;
 import com.example.ordersservice.models.Customer;
 import com.example.ordersservice.models.Orders;
 import com.example.ordersservice.models.Product;
 import com.example.ordersservice.repositories.OrderRepository;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
@@ -28,8 +30,8 @@ import java.util.List;
 public class OrderController {
 
 
-    private final OrderRepository orderRepository;
-    private final RestTemplate restTemplate;
+    private OrderRepository orderRepository;
+    private RestTemplate restTemplate;
 
 
     @Value("${customer-service.url}")
@@ -39,6 +41,12 @@ public class OrderController {
     private String productServiceBaseUrl;
 
 
+    public OrderController(OrderRepository orderRepository, RestTemplate restTemplate) {
+        this.orderRepository = orderRepository;
+        this.restTemplate = restTemplate;
+        RestTemplateResponseErrorHandler errorHandler = new RestTemplateResponseErrorHandler();
+        restTemplate.setErrorHandler(errorHandler);
+    }
 
     @GetMapping("/all")
     public ResponseEntity<Iterable<Orders>> all(){
