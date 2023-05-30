@@ -8,13 +8,13 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 
-    @Data
-    @AllArgsConstructor
-    @NoArgsConstructor
-    public class ErrorResponse {
-        private String message;
-        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss")
-        private LocalDateTime timestamp;
-        private HttpStatus status;
-    }
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+public class ErrorResponse {
+    private String message;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd hh:mm:ss")
+    private LocalDateTime timestamp;
+    private HttpStatus status;
+}
 
