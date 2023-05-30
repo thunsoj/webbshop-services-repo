@@ -1,6 +1,5 @@
 package com.example.ordersservice.errorhandler;
 
-import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.stereotype.Component;
@@ -21,7 +20,6 @@ public class RestTemplateResponseErrorHandler implements ResponseErrorHandler {
         if (response.getStatusCode().is5xxServerError()) {
             throw new RuntimeException("Server error occurred: " + response.getStatusCode());
         } else if (response.getStatusCode().is4xxClientError()) {
-            // Handle CLIENT_ERROR
             if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
                 try {
                     throw new ChangeSetPersister.NotFoundException();
@@ -29,7 +27,6 @@ public class RestTemplateResponseErrorHandler implements ResponseErrorHandler {
                     throw new RuntimeException("NU ÄR DU I RESTTEMPLATERESPONSE YÄÄÄÄ"+e);
                 }
             } else {
-                // You can handle other client errors here
                 throw new RuntimeException("Client error occurred: " + response.getStatusCode());
             }
         }

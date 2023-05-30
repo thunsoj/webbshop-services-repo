@@ -84,32 +84,24 @@ public class OrderController {
     }
 
     @GetMapping("/all/{userId}")
-    public ResponseEntity<?> allByUser(@PathVariable Long userId) {
+    public ResponseEntity<List<OrderDTO>> allByUser(@PathVariable Long userId) {
 
         Customer customer = restTemplate.getForObject(customerServiceBaseUrl + userId, Customer.class);
 
-        if(customer != null){
-            return ResponseEntity.ok(orderRepository.findAllByCustomerId(customer.getId()).stream().map(e-> {
-                List<Product> products = retrieveProducts(e.getProductIds());
-                if(products != null){
-                    if(products.size() == e.getProductIds().size()){
-                        return OrderDTO.builder()
-                                .id(e.getId())
-                                .created(e.getCreated())
-                                .updated(e.getUpdated())
-                                .customer(customer)
-                                .products(products)
-                                .build();
-                    }else {
-                        throw new RuntimeException("Incomplete products data for order with ID: " + e.getId());
-                    }
-                } else {
-                    throw new RuntimeException("Incomplete products data for order with ID: " + e.getId());
-                }
-            }).toList());
-        } else {
-            throw new RuntimeException("Incomplete products data for order with ID: ");
-        }
+        List<Orders> allOrdersOnCustomer = orderRepository.findAllByCustomerId(customer.getId());
+
+        List<OrderDTO> orderDTOs = allOrdersOnCustomer.stream().map(e-> {
+            List<Product> products = retrieveProducts(e.getProductIds());
+            return OrderDTO.builder()
+                            .id(e.getId())
+                            .created(e.getCreated())
+                            .updated(e.getUpdated())
+                            .customer(customer)
+                            .products(products)
+                            .build();
+            }).toList();
+
+            return new ResponseEntity<>(orderDTOs, HttpStatus.OK);
     }
 
     @PostMapping("add/{customerId}")

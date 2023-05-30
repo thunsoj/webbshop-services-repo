@@ -29,8 +29,9 @@ import java.util.List;
 
     //hitta kund baserat på id
     @GetMapping("/{id}")
-    public Customer getCustomerById(@PathVariable Long id) {
-        return customerRepository.findById(id).orElseThrow(() -> new CustomerNotFoundException(id));
+    public ResponseEntity<Customer> getCustomerById(@PathVariable Long id) {
+        var customer =  customerRepository.findById(id).orElseThrow(() -> new CustomerNotFoundException("Cant find customer with id: " + id));
+        return new ResponseEntity<>(customer, HttpStatus.OK);
     }
 
     //lägg till ny kund
@@ -50,13 +51,13 @@ import java.util.List;
         return "The customer with ID " + id + " was deleted.";
     }
 
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    @ExceptionHandler({ CustomerNotFoundException.class })
-    public ErrorResponse handleCustomerNotFoundException(CustomerNotFoundException exception) {
-        ErrorResponse error = new ErrorResponse();
-        error.setMessage(exception.getMessage());
-        error.setTimestamp(LocalDateTime.now());
-        error.setStatus(HttpStatus.NOT_FOUND);
-        return error;
-    }
+    //@ResponseStatus(HttpStatus.NOT_FOUND)
+//    @ExceptionHandler({ CustomerNotFoundException.class })
+//    public ErrorResponse handleCustomerNotFoundException(CustomerNotFoundException exception) {
+//        ErrorResponse error = new ErrorResponse();
+//        error.setMessage(exception.getMessage());
+//        error.setTimestamp(LocalDateTime.now());
+//        error.setStatus(HttpStatus.NOT_FOUND);
+//        return error;
+//    }
 }
