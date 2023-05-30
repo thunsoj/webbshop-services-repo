@@ -32,19 +32,4 @@ public class CustomExceptionsHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
     }
 
-    /*
-    // ShoppingListNotFoundException
-    @ExceptionHandler(ShoppingListNotFoundException.class)
-    public final ResponseEntity<ErrorDetails> handleShoppingListNotFoundException(Exception ex, WebRequest request) {
-        ErrorDetails errorDetails = ErrorDetails.builder()
-                .timeStamp(LocalDateTime.now())
-                .message(ex.getMessage())
-                .details(request.getDescription(false)) // Get a short description of this request
-                .build();
-
-        return new ResponseEntity<>(errorDetails, HttpStatus.NOT_FOUND);
-    }
-
-     */
-
 }
