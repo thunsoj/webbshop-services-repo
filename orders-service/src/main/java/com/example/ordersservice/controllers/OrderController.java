@@ -90,17 +90,13 @@ public class OrderController {
     }
 
     @PostMapping("add/{customerId}")
-
     public ResponseEntity<?> addOrder(@PathVariable Long customerId, @RequestBody List<Long> productsIds){
-        if(restTemplate.getForObject(customerServiceBaseUrl + customerId, Customer.class) != null){
-            List<Product> products = retrieveProducts(productsIds);
-            return ResponseEntity.ok(orderRepository.save(Orders.builder()
-                    .customerId(customerId)
-                    .productIds(productsIds)
-                    .build()));
-            } else {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
+        restTemplate.getForObject(customerServiceBaseUrl + customerId, Customer.class);
+        List<Product> products = retrieveProducts(productsIds);
+        return ResponseEntity.ok(orderRepository.save(Orders.builder()
+                .customerId(customerId)
+                .productIds(products.stream().map(Product::getId).toList())
+                .build()));
     }
 
     @GetMapping("/{orderId}")
