@@ -1,6 +1,8 @@
 package com.example.ordersservice.errorhandler;
 
 import java.time.LocalDateTime;
+
+import lombok.Builder;
 import org.springframework.http.HttpStatus;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
