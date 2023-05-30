@@ -19,7 +19,7 @@ public class RestTemplateResponseErrorHandler implements ResponseErrorHandler {
     @Override
     public void handleError(ClientHttpResponse response) throws IOException {
         if (response.getStatusCode().is5xxServerError()) {
-            throw new RuntimeException("Server error occurred: " + response.getStatusCode().toString());
+            throw new RuntimeException("Server error occurred: " + response.getStatusCode());
         } else if (response.getStatusCode().is4xxClientError()) {
             // Handle CLIENT_ERROR
             if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
