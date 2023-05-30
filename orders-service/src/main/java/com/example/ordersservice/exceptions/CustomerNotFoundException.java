@@ -1,4 +1,4 @@
-package com.example.ordersservice.controllers;
+package com.example.ordersservice.exceptions;
 
 
 import org.springframework.http.HttpStatus;
@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 @ResponseStatus(value = HttpStatus.NOT_FOUND)
 public class CustomerNotFoundException extends RuntimeException {
 
-    CustomerNotFoundException(Long id) {
+    public CustomerNotFoundException(Long id) {
         super("Could not find employee " + id);
     }
 

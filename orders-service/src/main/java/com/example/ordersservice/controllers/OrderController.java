@@ -3,6 +3,7 @@ package com.example.ordersservice.controllers;
 
 import ErrorHandler.ErrorResponse;
 import com.example.ordersservice.dto.OrderDTO;
+import com.example.ordersservice.exceptions.CustomerNotFoundException;
 import com.example.ordersservice.models.Customer;
 import com.example.ordersservice.models.Orders;
 import com.example.ordersservice.models.Product;
