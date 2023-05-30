@@ -1,12 +1,13 @@
 package com.example.ordersservice.controllers;
 
 
+import ErrorHandler.ErrorResponse;
 import com.example.ordersservice.dto.OrderDTO;
 import com.example.ordersservice.models.Customer;
 import com.example.ordersservice.models.Orders;
 import com.example.ordersservice.models.Product;
 import com.example.ordersservice.repositories.OrderRepository;
-import com.example.ordersservice.errorhandler.RestTemplateErrorHandler;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,12 +19,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
 @CrossOrigin
 @RequiredArgsConstructor
 @RequestMapping("/order")
+@ResponseStatus(code = HttpStatus.CREATED)
 public class OrderController {
 
 
@@ -42,9 +45,6 @@ public class OrderController {
         this.orderRepository = orderRepository;
         this.restTemplate = restTemplate;
 
-        restTemplate = new RestTemplate();
-        RestTemplateErrorHandler errorHandler = new RestTemplateErrorHandler();
-        restTemplate.setErrorHandler(errorHandler);
     }
 
 
@@ -99,11 +99,11 @@ public class OrderController {
                                 "}).toList()";
                     }
                 } else {
-                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Oops an error occured");
+                    return ResponseEntity.ok(new ErrorResponse().getTimestamp().getHour()).getStatusCode().getClass();
                 }
 
             } else {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Oops an error occured");
+                return ResponseEntity.ok(new ErrorResponse());
             }
 
         }).toList());
@@ -140,11 +140,11 @@ public class OrderController {
                                 "}).toList()";
                     }
                 } else {
-                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Oops an error occured");
+                    return ResponseEntity.ok(new ErrorResponse());
                 }
             }).toList());
         } else {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Oops an error occured");
+            return ResponseEntity.ok(new ErrorResponse());
         }
     }
 
@@ -170,13 +170,13 @@ public class OrderController {
                                     .productIds(productsIds)
                             .build()));
                 }else{
-                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Oops an error occured");
+                    return ResponseEntity.ok(new ErrorResponse());
                 }
             } else {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Oops an error occured");
+                return ResponseEntity.ok(new ErrorResponse());
             }
         } else {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Oops an error occured");
+            return ResponseEntity.ok(new ErrorResponse());
 
         }
     }
@@ -204,13 +204,23 @@ public class OrderController {
                             .products(products)
                             .build());
                 } else {
-                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Oops an error occured");
+                    return ResponseEntity.ok(new ErrorResponse());
                 }
             }else{
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Oops an error occured");
+                return ResponseEntity.ok(new ErrorResponse());
             }
         }else{
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Oops an error occured");
+            return ResponseEntity.ok(new ErrorResponse());
         }
+    }
+
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ExceptionHandler({ CustomerNotFoundException.class })
+    public ErrorResponse handleCustomerNotFoundException(CustomerNotFoundException exception) {
+        ErrorResponse error = new ErrorResponse();
+        error.setMessage(exception.getMessage());
+        error.setTimestamp(LocalDateTime.now());
+        error.setStatus(HttpStatus.NOT_FOUND);
+        return error;
     }
 }
