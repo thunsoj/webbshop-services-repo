@@ -1,5 +1,6 @@
 package com.example.ordersservice.errorhandler;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.web.client.ResponseErrorHandler;
 import org.springframework.web.client.HttpServerErrorException;
@@ -16,13 +17,14 @@ import java.io.IOException;
 
         @Override
         public void handleError(ClientHttpResponse httpResponse) throws IOException {
-            if (httpResponse.getStatusCode().is5xxServerError()) {
-                throw new HttpServerErrorException(httpResponse.getStatusCode());
-            } else if (httpResponse.getStatusCode().is4xxClientError()) {
-                throw new HttpClientErrorException(httpResponse.getStatusCode());
+            HttpStatus statusCode = (HttpStatus) httpResponse.getStatusCode();
+            if (statusCode.is5xxServerError()) {
+                throw new HttpServerErrorException(statusCode, "A server error occured");
+            } else if (statusCode.is4xxClientError()) {
+                throw new HttpClientErrorException(statusCode, "A client error occured");
             } else {
-
-                throw new RuntimeException("Unexpected HTTP error: " + httpResponse.getStatusCode());
+                // Handle other types of errors if needed
+                throw new RuntimeException("Unexpected HTTP error: " + statusCode);
             }
         }
     }

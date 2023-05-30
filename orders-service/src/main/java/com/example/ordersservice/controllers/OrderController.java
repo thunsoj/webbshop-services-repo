@@ -99,11 +99,11 @@ public class OrderController {
                                 "}).toList()";
                     }
                 } else {
-                    return ResponseEntity.ok(restTemplate.getErrorHandler());
+                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Oops an error occured");
                 }
 
             } else {
-                return ResponseEntity.ok(restTemplate.getErrorHandler());
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Oops an error occured");
             }
 
         }).toList());
@@ -140,11 +140,11 @@ public class OrderController {
                                 "}).toList()";
                     }
                 } else {
-                    return ResponseEntity.ok(restTemplate.getErrorHandler());
+                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Oops an error occured");
                 }
             }).toList());
         } else {
-            return ResponseEntity.ok(restTemplate.getErrorHandler());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Oops an error occured");
         }
     }
 
@@ -170,13 +170,13 @@ public class OrderController {
                                     .productIds(productsIds)
                             .build()));
                 }else{
-                    return ResponseEntity.ok(restTemplate.getErrorHandler());
+                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Oops an error occured");
                 }
             } else {
-                return ResponseEntity.ok(restTemplate.getErrorHandler());
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Oops an error occured");
             }
         } else {
-            return ResponseEntity.ok(restTemplate.getErrorHandler());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Oops an error occured");
 
         }
     }
@@ -204,14 +204,13 @@ public class OrderController {
                             .products(products)
                             .build());
                 } else {
-                    return ResponseEntity.ok("Melindas objekt som säger nån av produkterna finns ej" +
-                            "(helst en lista på dom som inte finns)");
+                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Oops an error occured");
                 }
             }else{
-                return ResponseEntity.ok(restTemplate.getErrorHandler());
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Oops an error occured");
             }
         }else{
-            return ResponseEntity.ok(restTemplate.getErrorHandler());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Oops an error occured");
         }
     }
 }
