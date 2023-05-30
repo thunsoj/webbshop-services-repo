@@ -13,9 +13,9 @@ public class MyCustomErrorAttributes extends DefaultErrorAttributes {
     public Map<String, Object> getErrorAttributes(
             WebRequest webRequest, ErrorAttributeOptions options) {
             Map<String, Object> errorAttributes = super.getErrorAttributes(webRequest, options);
-            errorAttributes.put("HEEEEEEJ", webRequest.getLocale().toString());
+            errorAttributes.put("Ajajaj", webRequest.getLocale().toString());
             errorAttributes.remove("error");
             return errorAttributes;
-        }
     }
+}
 

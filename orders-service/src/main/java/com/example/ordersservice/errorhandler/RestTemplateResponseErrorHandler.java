@@ -1,5 +1,6 @@
 package com.example.ordersservice.errorhandler;
 
+import com.example.ordersservice.exceptions.ResourceNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.stereotype.Component;

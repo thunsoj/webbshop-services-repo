@@ -21,7 +21,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @CrossOrigin
@@ -94,15 +93,15 @@ public class OrderController {
         List<OrderDTO> orderDTOs = allOrdersOnCustomer.stream().map(e-> {
             List<Product> products = retrieveProducts(e.getProductIds());
             return OrderDTO.builder()
-                            .id(e.getId())
-                            .created(e.getCreated())
-                            .updated(e.getUpdated())
-                            .customer(customer)
-                            .products(products)
-                            .build();
-            }).toList();
+                    .id(e.getId())
+                    .created(e.getCreated())
+                    .updated(e.getUpdated())
+                    .customer(customer)
+                    .products(products)
+                    .build();
+        }).toList();
 
-            return new ResponseEntity<>(orderDTOs, HttpStatus.OK);
+        return new ResponseEntity<>(orderDTOs, HttpStatus.OK);
     }
 
     @PostMapping("add/{customerId}")
