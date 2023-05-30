@@ -21,11 +21,7 @@ public class RestTemplateResponseErrorHandler implements ResponseErrorHandler {
             throw new RuntimeException("Server error occurred: " + response.getStatusCode());
         } else if (response.getStatusCode().is4xxClientError()) {
             if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
-                try {
-                    throw new ChangeSetPersister.NotFoundException();
-                } catch (ChangeSetPersister.NotFoundException e) {
-                    throw new RuntimeException("NU ÄR DU I RESTTEMPLATERESPONSE YÄÄÄÄ"+e);
-                }
+                throw new ResourceNotFoundException("No Resource Found With That Id"); // resource not found
             } else {
                 throw new RuntimeException("Client error occurred: " + response.getStatusCode());
             }

@@ -5,7 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 // You can declare a response status code for a customer exception
-@ResponseStatus(value = HttpStatus.NOT_FOUND)
+@ResponseStatus(value = HttpStatus.BAD_REQUEST)
 public class CustomerNotFoundException extends RuntimeException {
 
 
@@ -13,4 +13,7 @@ public class CustomerNotFoundException extends RuntimeException {
 //        super("Could not find customer with id: " + id);
 //    }
 
+    public CustomerNotFoundException(String message) {
+        super(message);
+    }
 }
