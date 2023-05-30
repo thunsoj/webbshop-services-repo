@@ -10,7 +10,6 @@ import com.example.ordersservice.models.Product;
 import com.example.ordersservice.repositories.OrderRepository;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
@@ -32,7 +31,7 @@ public class OrderController {
 
 
     private final OrderRepository orderRepository;
-    private RestTemplate restTemplate;
+    private final RestTemplate restTemplate;
 
 
     @Value("${customer-service.url}")
@@ -40,16 +39,6 @@ public class OrderController {
 
     @Value("${product-service.url}")
     private String productServiceBaseUrl;
-
-    @Autowired
-    public OrderController(OrderRepository orderRepository, RestTemplate restTemplate) {
-        this.orderRepository = orderRepository;
-        this.restTemplate = restTemplate;
-
-    }
-
-
-
 
     @GetMapping("/all")
     public ResponseEntity<Iterable<Orders>> all(){
@@ -88,6 +77,8 @@ public class OrderController {
                     if(products.size() == e.getProductIds().size()){
                         return OrderDTO.builder()
                                 .id(e.getId())
+                                .created(e.getCreated())
+                                .updated(e.getUpdated())
                                 .customer(customer)
                                 .products(products)
                                 .build();
@@ -116,19 +107,13 @@ public class OrderController {
         Customer customer = restTemplate.getForObject(customerServiceBaseUrl + userId, Customer.class);
         if(customer != null){
             return ResponseEntity.ok(orderRepository.findAllByCustomerId(customer.getId()).stream().map(e-> {
-                HttpEntity<List<Long>> requestEntity = new HttpEntity<>(e.getProductIds());
-                ResponseEntity<List<Product>> response = restTemplate.exchange(
-                        productServiceBaseUrl + "/list",
-                        HttpMethod.POST,
-                        requestEntity,
-                        new ParameterizedTypeReference<>() {
-                        }
-                );
-                List<Product> products = response.getBody();
+                List<Product> products = retrieveProducts(e.getProductIds());
                 if(products != null){
                     if(products.size() == e.getProductIds().size()){
                         return OrderDTO.builder()
                                 .id(e.getId())
+                                .created(e.getCreated())
+                                .updated(e.getUpdated())
                                 .customer(customer)
                                 .products(products)
                                 .build();
@@ -153,7 +138,6 @@ public class OrderController {
 
     public ResponseEntity<?> addOrder(@PathVariable Long customerId,
                                       @RequestBody List<Long> productsIds){
-
         if(restTemplate.getForObject(customerServiceBaseUrl + customerId, Customer.class) != null){
             HttpEntity<List<Long>> requestEntity = new HttpEntity<>(productsIds);
             ResponseEntity<List<Product>> response = restTemplate.exchange(
@@ -167,8 +151,8 @@ public class OrderController {
             if (products != null){
                 if(products.size() == productsIds.size()){
                     return ResponseEntity.ok(orderRepository.save(Orders.builder()
-                                    .customerId(customerId)
-                                    .productIds(productsIds)
+                            .customerId(customerId)
+                            .productIds(productsIds)
                             .build()));
                 }else{
                  throw new CustomerNotFoundException(customerId);
@@ -224,4 +208,19 @@ public class OrderController {
         error.setStatus(HttpStatus.NOT_FOUND);
         return error;
     }
+
+
+    private List<Product> retrieveProducts(List<Long> productIds) {
+        HttpEntity<List<Long>> requestEntity = new HttpEntity<>(productIds);
+        ResponseEntity<List<Product>> response = restTemplate.exchange(
+                productServiceBaseUrl + "/list",
+                HttpMethod.POST,
+                requestEntity,
+                new ParameterizedTypeReference<>() {
+                }
+        );
+        return response.getBody();
+    }
+
+
 }
