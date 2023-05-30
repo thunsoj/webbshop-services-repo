@@ -1,4 +1,4 @@
-package ErrorHandler;
+package com.example.customerservice.errorhandler;
 
 import java.time.LocalDateTime;
 import org.springframework.http.HttpStatus;

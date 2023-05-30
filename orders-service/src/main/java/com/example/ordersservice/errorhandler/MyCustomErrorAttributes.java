@@ -1,4 +1,4 @@
-package ErrorHandler;
+package com.example.ordersservice.errorhandler;
 
 import java.util.Map;
 import org.springframework.boot.web.error.ErrorAttributeOptions;

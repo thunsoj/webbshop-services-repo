@@ -1,9 +1,9 @@
 package com.example.ordersservice.controllers;
 
 
-import ErrorHandler.ErrorResponse;
+
 import com.example.ordersservice.dto.OrderDTO;
-import com.example.ordersservice.exceptions.CustomerNotFoundException;
+import com.example.ordersservice.errorhandler.ErrorResponse;
 import com.example.ordersservice.models.Customer;
 import com.example.ordersservice.models.Orders;
 import com.example.ordersservice.models.Product;
@@ -18,8 +18,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
-
-import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -115,7 +113,7 @@ public class OrderController {
                             .productIds(productsIds)
                             .build()));
                 }else{
-                 throw new CustomerNotFoundException(customerId);
+                    return new ResponseEntity<>("Ajajaj", HttpStatus.NOT_FOUND);
                 }
             } else {
                 return ResponseEntity.ok(new ErrorResponse());
@@ -143,7 +141,7 @@ public class OrderController {
                             .products(products)
                             .build());
                 } else {
-                    throw new CustomerNotFoundException(customer.getId());
+                    return new ResponseEntity<>("Ajajaj", HttpStatus.NOT_FOUND);
                 }
             }else{
                 return ResponseEntity.ok(new ErrorResponse());
@@ -151,16 +149,6 @@ public class OrderController {
         }else{
             return ResponseEntity.ok(new ErrorResponse());
         }
-    }
-
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    @ExceptionHandler({ CustomerNotFoundException.class })
-    public ErrorResponse handleCustomerNotFoundException(CustomerNotFoundException exception) {
-        ErrorResponse error = new ErrorResponse();
-        error.setMessage(exception.getMessage());
-        error.setTimestamp(LocalDateTime.now());
-        error.setStatus(HttpStatus.NOT_FOUND);
-        return error;
     }
 
 
@@ -175,6 +163,4 @@ public class OrderController {
         );
         return response.getBody();
     }
-
-
 }
