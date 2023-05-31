@@ -93,10 +93,10 @@ public class OrderController {
     public ResponseEntity<?> addOrder(@PathVariable Long customerId, @RequestBody List<Long> productsIds){
         restTemplate.getForObject(customerServiceBaseUrl + customerId, Customer.class);
         List<Product> products = retrieveProducts(productsIds);
-        return ResponseEntity.ok(orderRepository.save(Orders.builder()
+        return new ResponseEntity<>(orderRepository.save(Orders.builder()
                 .customerId(customerId)
                 .productIds(products.stream().map(Product::getId).toList())
-                .build()));
+                .build()), HttpStatus.CREATED);
     }
 
     @GetMapping("/{orderId}")
