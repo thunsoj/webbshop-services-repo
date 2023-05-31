@@ -5,6 +5,7 @@ package com.example.ordersservice.controllers;
 import com.example.ordersservice.dto.OrderDTO;
 import com.example.ordersservice.errorhandler.RestTemplateResponseErrorHandler;
 import com.example.ordersservice.exceptions.OrderNotFoundException;
+import com.example.ordersservice.exceptions.ResourceNotFoundException;
 import com.example.ordersservice.models.Customer;
 import com.example.ordersservice.models.Orders;
 import com.example.ordersservice.models.Product;
@@ -20,6 +21,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
+
+import java.lang.module.ResolutionException;
 import java.util.List;
 
 @RestController
@@ -94,6 +97,9 @@ public class OrderController {
     public ResponseEntity<?> addOrder(@PathVariable Long customerId, @RequestBody List<Long> productsIds){
         restTemplate.getForObject(customerServiceBaseUrl + customerId, Customer.class);
         List<Product> products = retrieveProducts(productsIds);
+        if(products.size() != productsIds.size()){
+            throw new ResourceNotFoundException("Error, tried to fetch product that doesn't exist");
+        }
         return new ResponseEntity<>(orderRepository.save(Orders.builder()
                 .customerId(customerId)
                 .productIds(products.stream().map(Product::getId).toList())
