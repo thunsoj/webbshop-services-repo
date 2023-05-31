@@ -19,12 +19,12 @@ public class ProductController {
 
     private final ProductRepository repo;
 
-    @RequestMapping("/all")
+    @GetMapping("/all")
     public List<Product> findAll(){
         return repo.findAll();
     }
 
-    @RequestMapping("/{id}")
+    @GetMapping("/{id}")
     public Product findById(@PathVariable Long id){
         return repo.findById(id).orElseThrow(()-> new ProductNotFoundException(id));
     }
