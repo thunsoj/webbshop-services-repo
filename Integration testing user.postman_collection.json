@@ -252,7 +252,7 @@
 							"const response = pm.response.json();\r",
 							"pm.test(\"Get order from nonexisting customer ID 3\", function () {\r",
 							"    pm.response.to.have.status(404);\r",
-							"    pm.expect(response.message).to.eql(\"Could not find order with ID: 99\");\r",
+							"    pm.expect(response.message).to.eql(\"No resource found with that Id\");\r",
 							"})"
 						],
 						"type": "text/javascript"
