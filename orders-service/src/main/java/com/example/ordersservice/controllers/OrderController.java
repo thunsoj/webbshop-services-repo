@@ -96,9 +96,6 @@ public class OrderController {
     public ResponseEntity<?> addOrder(@PathVariable Long customerId, @RequestBody List<Long> productsIds){
         restTemplate.getForObject(customerServiceBaseUrl + customerId, Customer.class);
         List<Product> products = retrieveProducts(productsIds);
-        if(products.size() != productsIds.size()){
-            throw new ResourceNotFoundException("Error, tried to fetch product that doesn't exist");
-        }
         return new ResponseEntity<>(orderRepository.save(Orders.builder()
                 .customerId(customerId)
                 .productIds(products.stream().map(Product::getId).toList())

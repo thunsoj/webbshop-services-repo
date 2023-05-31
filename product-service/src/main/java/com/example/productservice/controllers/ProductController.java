@@ -26,7 +26,7 @@ public class ProductController {
 
     @GetMapping("/{id}")
     public Product findById(@PathVariable Long id){
-        return repo.findById(id).orElseThrow(()-> new ProductNotFoundException(id));
+        return repo.findById(id).orElseThrow(()-> new ProductNotFoundException("Could not find product with id: "+id));
     }
 
     @PostMapping("/add")
@@ -36,6 +36,10 @@ public class ProductController {
 
     @PostMapping("/list")
     public ResponseEntity<List<Product>> productList(@RequestBody List<Long> ids){
+        List<Product> products = repo.findByIdIn(ids);
+        if (products.size() != ids.size()){
+            throw new ProductNotFoundException("Could not find products with the provided list of id's");
+        }
         return ResponseEntity.ok(repo.findByIdIn(ids));
     }
 
