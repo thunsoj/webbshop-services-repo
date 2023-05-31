@@ -1,0 +1,147 @@
+{
+	"info": {
+		"_postman_id": "0a13da7b-a549-4c9f-bc28-767b93716b7b",
+		"name": "Integration testing admin",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "27678778",
+		"_collection_link": "https://www.postman.com/ruckel/workspace/ruckel-public-workspace/collection/27678778-0a13da7b-a549-4c9f-bc28-767b93716b7b?action=share&creator=27678778&source=collection_link"
+	},
+	"item": [
+		{
+			"name": "order/add/2",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Add order w/ customer ID 2 w/ nonexisting product\", () => {\r",
+							"    pm.response.to.have.status(200);\r",
+							"    const response = pm.response.json();\r",
+							"    pm.expect(response.customerId).to.eql(2);\r",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "[1,2,3]",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrlOrder}}/add/2",
+					"host": [
+						"{{baseUrlOrder}}"
+					],
+					"path": [
+						"add",
+						"2"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "order/add/3",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Add order w/ nonexisting customer ID 3\", () => {\r",
+							"    pm.response.to.have.status(404);\r",
+							"    const response = pm.response.json();\r",
+							"    pm.expect(response.message).to.eql(\"No Resource Found With That Id\");\r",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "[\r\n    1,\r\n    2\r\n]",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrlOrder}}/add/3",
+					"host": [
+						"{{baseUrlOrder}}"
+					],
+					"path": [
+						"add",
+						"3"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "basic",
+		"basic": [
+			{
+				"key": "password",
+				"value": "{{password}}",
+				"type": "string"
+			},
+			{
+				"key": "username",
+				"value": "{{username-admin}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrlOrder",
+			"value": "localhost:8081/order",
+			"type": "string"
+		},
+		{
+			"key": "baseUrlCustomer",
+			"value": "localhost:8082/customer",
+			"type": "string"
+		},
+		{
+			"key": "baseUrlProduct",
+			"value": "localhost:8080/product",
+			"type": "string"
+		}
+	]
+}
