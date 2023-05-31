@@ -8,6 +8,7 @@ services:
       - "3306:3306"
     environment:
       - MYSQL_RANDOM_ROOT_PASSWORD=yes
+      - DB_PASSWORD=${DB_PASSWORD}
     volumes:
       - ./sql:/docker-entrypoint-initdb.d
     healthcheck:
@@ -27,6 +28,9 @@ services:
       dockerfile: Dockerfile
     ports:
       - "8080:8080"
+    environment:
+      - DB_USER=${DB_USER_PRODUCT}
+      - DB_PASSWORD=${DB_PASSWORD}
 
 
   orders-service:
@@ -39,6 +43,9 @@ services:
       dockerfile: Dockerfile
     ports:
       - "8081:8080"
+    environment:
+      - DB_USER=${DB_USER_ORDERS}
+      - DB_PASSWORD=${DB_PASSWORD}
    
   customer-service:
 
@@ -51,3 +58,6 @@ services:
       dockerfile: Dockerfile
     ports:
       - "8082:8080"
+    environment:
+      - DB_USER=${DB_USER_CUSTOMER}
+      - DB_PASSWORD=${DB_PASSWORD}
