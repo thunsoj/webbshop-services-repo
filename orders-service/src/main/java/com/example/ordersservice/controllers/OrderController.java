@@ -5,7 +5,6 @@ package com.example.ordersservice.controllers;
 import com.example.ordersservice.dto.OrderDTO;
 import com.example.ordersservice.errorhandler.RestTemplateResponseErrorHandler;
 import com.example.ordersservice.exceptions.OrderNotFoundException;
-import com.example.ordersservice.exceptions.ResourceNotFoundException;
 import com.example.ordersservice.models.Customer;
 import com.example.ordersservice.models.Orders;
 import com.example.ordersservice.models.Product;
