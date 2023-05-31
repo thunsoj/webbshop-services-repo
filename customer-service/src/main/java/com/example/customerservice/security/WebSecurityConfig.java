@@ -21,9 +21,9 @@ public class WebSecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests((requests) -> requests
                         .dispatcherTypeMatchers(DispatcherType.FORWARD, DispatcherType.ERROR).permitAll()
-//                        .requestMatchers().permitAll()
                         .requestMatchers("/customer/", "/customer/all", "/customer/{id}").hasRole("USER")
-                        .requestMatchers("/customer/add", "/customer/delete/{id}").hasRole("ADMIN"))
+                        .requestMatchers("/customer/add", "/customer/delete/{id}").hasRole("ADMIN")
+                        .requestMatchers("/swagger-ui/**", "/swagger-ui/index.html",  "/v3/api-docs/**").permitAll())
                 .formLogin(Customizer.withDefaults())
                 .csrf().disable();
         ;
