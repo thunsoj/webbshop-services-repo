@@ -14,10 +14,10 @@
 					"listen": "test",
 					"script": {
 						"exec": [
+							"const response = pm.response.json();\r",
 							"pm.test(\"Add order w/ customer ID 2 w/ nonexisting product\", () => {\r",
-							"    pm.response.to.have.status(200);\r",
-							"    const response = pm.response.json();\r",
-							"    pm.expect(response.customerId).to.eql(2);\r",
+							"    pm.response.to.have.status(404);\r",
+							"    pm.expect(response.message).to.eql(\"Error, tried to fetch product that doesn't exist\");\r",
 							"})"
 						],
 						"type": "text/javascript"
@@ -56,9 +56,9 @@
 					"listen": "test",
 					"script": {
 						"exec": [
+							"const response = pm.response.json();\r",
 							"pm.test(\"Add order w/ nonexisting customer ID 3\", () => {\r",
 							"    pm.response.to.have.status(404);\r",
-							"    const response = pm.response.json();\r",
 							"    pm.expect(response.message).to.eql(\"No Resource Found With That Id\");\r",
 							"})"
 						],

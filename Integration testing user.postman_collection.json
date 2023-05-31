@@ -15,6 +15,7 @@
 					"listen": "test",
 					"script": {
 						"exec": [
+							"const response = pm.response.json();\r",
 							"pm.test(\"Get all customers\", function () {\r",
 							"    pm.response.to.have.status(200);\r",
 							"})"
@@ -52,6 +53,7 @@
 					"listen": "test",
 					"script": {
 						"exec": [
+							"const response = pm.response.json();\r",
 							"pm.test(\"Get individual customer\", function () {\r",
 							"    pm.response.to.have.status(200);\r",
 							"})"
@@ -82,6 +84,7 @@
 					"listen": "test",
 					"script": {
 						"exec": [
+							"const response = pm.response.json();\r",
 							"pm.test(\"Get all orders\", function () {\r",
 							"    pm.response.to.have.status(200);\r",
 							"})"
@@ -119,6 +122,7 @@
 					"listen": "test",
 					"script": {
 						"exec": [
+							"const response = pm.response.json();\r",
 							"pm.test(\"Get individual order.\", function () {\r",
 							"    pm.response.to.have.status(200);\r",
 							"})"
@@ -143,14 +147,16 @@
 			"response": []
 		},
 		{
-			"name": "order/3",
+			"name": "order/99",
 			"event": [
 				{
 					"listen": "test",
 					"script": {
 						"exec": [
+							"const response = pm.response.json();\r",
 							"pm.test(\"Get nonexisting order.\", function () {\r",
-							"    pm.response.to.have.status(500);\r",
+							"    pm.response.to.have.status(404);\r",
+							"    pm.expect(response.message).to.eql(\"Could not find order with ID: 99\");\r",
 							"})"
 						],
 						"type": "text/javascript"
@@ -161,12 +167,12 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "{{baseUrlOrder}}/3",
+					"raw": "{{baseUrlOrder}}/99",
 					"host": [
 						"{{baseUrlOrder}}"
 					],
 					"path": [
-						"3"
+						"99"
 					]
 				}
 			},
@@ -179,6 +185,7 @@
 					"listen": "test",
 					"script": {
 						"exec": [
+							"const response = pm.response.json();\r",
 							"pm.test(\"Get orders from customer ID 1\", function () {\r",
 							"    pm.response.to.have.status(200);\r",
 							"})"
@@ -210,6 +217,7 @@
 					"listen": "test",
 					"script": {
 						"exec": [
+							"const response = pm.response.json();\r",
 							"pm.test(\"Get empty array of orders from customer ID 2\", function () {\r",
 							"    pm.response.to.have.status(200);\r",
 							"})"
@@ -235,14 +243,16 @@
 			"response": []
 		},
 		{
-			"name": "order all/3",
+			"name": "order all/99",
 			"event": [
 				{
 					"listen": "test",
 					"script": {
 						"exec": [
+							"const response = pm.response.json();\r",
 							"pm.test(\"Get order from nonexisting customer ID 3\", function () {\r",
 							"    pm.response.to.have.status(404);\r",
+							"    pm.expect(response.message).to.eql(\"Could not find order with ID: 99\");\r",
 							"})"
 						],
 						"type": "text/javascript"
@@ -253,13 +263,13 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "{{baseUrlOrder}}/all/3",
+					"raw": "{{baseUrlOrder}}/all/99",
 					"host": [
 						"{{baseUrlOrder}}"
 					],
 					"path": [
 						"all",
-						"3"
+						"99"
 					]
 				}
 			},
@@ -272,9 +282,9 @@
 					"listen": "test",
 					"script": {
 						"exec": [
+							"const response = pm.response.json();\r",
 							"pm.test(\"Get all products\", () => {\r",
 							"    pm.response.to.have.status(200);\r",
-							"\r",
 							"})"
 						],
 						"type": "text/javascript"
@@ -310,9 +320,9 @@
 					"listen": "test",
 					"script": {
 						"exec": [
+							"const response = pm.response.json();\r",
 							"pm.test(\"Get product ID 1\", () => {\r",
 							"    pm.response.to.have.status(200);\r",
-							"    const response = pm.response.json();\r",
 							"    pm.expect(response.id).to.eql(1);\r",
 							"})"
 						],
