@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 public class CustomExceptionsHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(Exception.class)
-    public final ResponseEntity<ErrorResponse> handleBasicException(Exception ex, WebRequest request) {
+    public final ResponseEntity<ErrorResponse> handleBasicException(Exception ex) {
         ErrorResponse error = new ErrorResponse();
         error.setMessage(ex.getMessage());
         error.setTimestamp(LocalDateTime.now());
@@ -24,7 +24,7 @@ public class CustomExceptionsHandler extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler(CustomerNotFoundException.class)
-    public final ResponseEntity<ErrorResponse> handleCustomerNotFoundException(Exception ex, WebRequest request) {
+    public final ResponseEntity<ErrorResponse> handleCustomerNotFoundException(Exception ex) {
         ErrorResponse error = new ErrorResponse();
         error.setMessage(ex.getMessage());
         error.setTimestamp(LocalDateTime.now());

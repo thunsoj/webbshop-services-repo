@@ -4,6 +4,7 @@ package com.example.ordersservice.controllers;
 
 import com.example.ordersservice.dto.OrderDTO;
 import com.example.ordersservice.errorhandler.RestTemplateResponseErrorHandler;
+import com.example.ordersservice.exceptions.OrderNotFoundException;
 import com.example.ordersservice.models.Customer;
 import com.example.ordersservice.models.Orders;
 import com.example.ordersservice.models.Product;
@@ -102,7 +103,7 @@ public class OrderController {
     @GetMapping("/{orderId}")
     public ResponseEntity<?> byOrderId(@PathVariable Long orderId) {
 
-        Orders order = orderRepository.findById(orderId).orElseThrow();
+        Orders order = orderRepository.findById(orderId).orElseThrow(() -> new OrderNotFoundException("Could not find order with ID: " + orderId));
         Customer customer = restTemplate.getForObject(customerServiceBaseUrl + order.getCustomerId(), Customer.class);
         List<Product> products = retrieveProducts(order.getProductIds());
         return ResponseEntity.ok(OrderDTO.builder()

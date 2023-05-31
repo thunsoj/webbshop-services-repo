@@ -1,5 +1,6 @@
 package com.example.ordersservice.errorhandler;
 
+import com.example.ordersservice.exceptions.OrderNotFoundException;
 import com.example.ordersservice.exceptions.ResourceNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,7 +15,7 @@ import java.time.LocalDateTime;
 public class CustomExceptionsHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(Exception.class)
-    public final ResponseEntity<ErrorResponse> handleBasicException(Exception ex, WebRequest request) {
+    public final ResponseEntity<ErrorResponse> handleBasicException(Exception ex) {
         ErrorResponse error = new ErrorResponse();
         error.setMessage(ex.getMessage());
         error.setTimestamp(LocalDateTime.now());
@@ -24,7 +25,16 @@ public class CustomExceptionsHandler extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler(ResourceNotFoundException.class)
-    public final ResponseEntity<ErrorResponse> handleResourceNotFoundException(Exception ex, WebRequest request) {
+    public final ResponseEntity<ErrorResponse> handleResourceNotFoundException(Exception ex) {
+        ErrorResponse error = new ErrorResponse();
+        error.setMessage(ex.getMessage());
+        error.setTimestamp(LocalDateTime.now());
+        error.setStatus(HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(OrderNotFoundException.class)
+    public final ResponseEntity<ErrorResponse> handleOrderNotFoundException(Exception ex) {
         ErrorResponse error = new ErrorResponse();
         error.setMessage(ex.getMessage());
         error.setTimestamp(LocalDateTime.now());
