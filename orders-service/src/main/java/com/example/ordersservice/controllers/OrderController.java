@@ -10,6 +10,7 @@ import com.example.ordersservice.models.Orders;
 import com.example.ordersservice.models.Product;
 import com.example.ordersservice.repositories.OrderRepository;
 
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -51,11 +52,13 @@ public class OrderController {
     }
 
     @GetMapping("/all")
+    @Operation(summary = "find all orders without customer and product objects")
     public ResponseEntity<Iterable<Orders>> all(){
         return ResponseEntity.ok(orderRepository.findAll());
     }
 
     @GetMapping("/allWithPojo")
+    @Operation(summary = "get all with pojos")
     public ResponseEntity<List<OrderDTO>> allWithPojo() {
         return ResponseEntity.ok(orderRepository.findAll().stream().map(e-> {
             Customer customer = restTemplate.getForObject(customerServiceBaseUrl + e.getCustomerId(), Customer.class);
@@ -71,6 +74,7 @@ public class OrderController {
     }
 
     @GetMapping("/all/{userId}")
+    @Operation(summary = "find all orders from specific user")
     public ResponseEntity<List<OrderDTO>> allByUser(@PathVariable Long userId) {
 
         Customer customer = restTemplate.getForObject(customerServiceBaseUrl + userId, Customer.class);
@@ -92,6 +96,7 @@ public class OrderController {
     }
 
     @PostMapping("add/{customerId}")
+    @Operation(summary = "add order with customer id")
     public ResponseEntity<?> addOrder(@PathVariable Long customerId, @RequestBody List<Long> productsIds){
         restTemplate.getForObject(customerServiceBaseUrl + customerId, Customer.class);
         List<Product> products = retrieveProducts(productsIds);
@@ -102,6 +107,7 @@ public class OrderController {
     }
 
     @GetMapping("/{orderId}")
+    @Operation(summary = "get single order from id")
     public ResponseEntity<?> byOrderId(@PathVariable Long orderId) {
 
         Orders order = orderRepository.findById(orderId).orElseThrow(() -> new OrderNotFoundException("Could not find order with ID: " + orderId));
