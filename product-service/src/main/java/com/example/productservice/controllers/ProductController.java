@@ -21,25 +21,25 @@ public class ProductController {
     private final ProductRepository repo;
 
     @GetMapping("/all")
-    @Operation(summary = "find all products")
+    @Operation(summary = "Find all products")
     public List<Product> findAll(){
         return repo.findAll();
     }
 
     @GetMapping("/{id}")
-    @Operation(summary = "find product by id")
+    @Operation(summary = "Find single product by id")
     public Product findById(@PathVariable Long id){
         return repo.findById(id).orElseThrow(()-> new ProductNotFoundException("Could not find product with id: "+id));
     }
 
     @PostMapping("/add")
-    @Operation(summary = "add product")
+    @Operation(summary = "Add product")
     public ResponseEntity<Product> addProduct(@RequestBody Product p){
         return new ResponseEntity<>(repo.save(p), HttpStatus.CREATED);
     }
 
     @PostMapping("/list")
-    @Operation(summary = "returrn a list of products from id")
+    @Operation(summary = "Return a list of products from id")
     public ResponseEntity<List<Product>> productList(@RequestBody List<Long> ids){
         List<Product> products = repo.findByIdIn(ids);
         if (products.size() != ids.size()){
