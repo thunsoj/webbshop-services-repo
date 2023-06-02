@@ -27,7 +27,6 @@ import java.util.List;
 @CrossOrigin
 @RequiredArgsConstructor
 @RequestMapping("/order")
-@ResponseStatus(code = HttpStatus.CREATED)
 public class OrderController {
 
 
